@@ -2,6 +2,8 @@
 
 from akeneo_api_client.auth import Auth
 from akeneo_api_client.resources import (
+    AssetFamiliesPool,
+    AssetImages,
     AssociationTypesPool,
     AttributesPool,
     AttributeGroupsPool,
@@ -97,6 +99,9 @@ class Client:
             "media_files": MediaFilesPool(
                 urljoin(self._base_url, self.BASIC_API_PATH, "media-files/"), session
             ),
+            "asset_families": AssetFamiliesPool(
+                urljoin(self._base_url, self.BASIC_API_PATH, "asset-families/"), session
+            ),
             "products": ProductsPool(
                 urljoin(self._base_url, self.BASIC_API_PATH, "products/"), session
             ),
@@ -105,6 +110,12 @@ class Client:
             ),
             "published_products": PublishedProductsPool(
                 urljoin(self._base_url, self.BASIC_API_PATH, "published-products/"),
+                session,
+            ),
+            "asset_images": AssetImages(
+                urljoin(
+                    self._base_url, self.BASIC_API_PATH, "asset-families/product_image/assets"
+                ),
                 session,
             ),
         }
@@ -153,6 +164,14 @@ class Client:
     @property
     def media_files(self):
         return self._resources["media_files"]
+
+    @property
+    def asset_families(self):
+        return self._resources["asset_families"]
+
+    @property
+    def asset_images(self):
+        return self._resources["asset_images"]
 
     @property
     def products(self):

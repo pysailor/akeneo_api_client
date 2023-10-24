@@ -329,6 +329,44 @@ class MediaFilesPool(
     pass
 
 
+class AssetsPool(
+    ResourcePool,
+    CodeBasedResource,
+    ListableResource,
+    CreatableResource,
+    GettableResource,
+    UpdatableResource,
+):
+    """https://api.akeneo.com/api-reference.html#Asset"""
+
+    pass
+
+
+class AssetFamiliesPool(
+    ResourcePool,
+    CodeBasedResource,
+    ListableResource,
+    CreatableResource,
+    GettableResource,
+    UpdatableResource,
+):
+    """https://api.akeneo.com/api-reference.html#Assetfamily"""
+
+    def assets(self, code):
+        return AssetsPool(urljoin(self._endpoint, code, "assets/"), self._session)
+
+
+class AssetImages(
+    ResourcePool,
+    CodeBasedResource,
+    ListableResource,
+    CreatableResource,
+    GettableResource,
+    UpdatableResource,
+):
+    pass
+
+
 class LocalesPool(
     ResourcePool,
     CodeBasedResource,
