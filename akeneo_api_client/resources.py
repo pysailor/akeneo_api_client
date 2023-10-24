@@ -277,6 +277,7 @@ class AttributeOptionsPool(
     CreatableResource,
     GettableResource,
     ListableResource,
+    UpdatableListResource,
     UpdatableResource,
 ):
     """https://api.akeneo.com/api-reference.html#Attributeoptions"""
