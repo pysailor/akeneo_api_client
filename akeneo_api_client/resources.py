@@ -1,8 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from akeneo_api_client.utils import *
-from akeneo_api_client.interfaces import *
-from akeneo_api_client.result import *
+from akeneo_api_client.utils import urljoin
+from akeneo_api_client.interfaces import (
+    CreatableResourceInterface,
+    ListableResourceInterface,
+    GettableResourceInterface,
+    DeletableResourceInterface,
+    UpdatableResourceInterface,
+    CodeBasedResourceInterface,
+)
+from akeneo_api_client.result import Result
 import requests
 import json
 
@@ -135,8 +142,8 @@ class UpdatableListResource(UpdatableResourceInterface):
             num = 100
             n = math.ceil(len(items) / num)
 
-            itemss = [items[i : i + num] for i in range(0, (n - 1) * num, num)]
-            itemss.append(items[(n - 1) * num :])
+            itemss = [items[i : i + num] for i in range(0, (n - 1) * num, num)]  # noqa: E203
+            itemss.append(items[(n - 1) * num :])  # noqa: E203
 
             return [
                 item for those_items in itemss for item in self.update_create_list(those_items)

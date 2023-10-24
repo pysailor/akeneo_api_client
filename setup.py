@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 import os
-import re
 import sys
 
 from codecs import open
 
 from setuptools import setup
-from setuptools.command.test import test as TestCommand
-import subprocess
 
 here = os.path.abspath(os.path.dirname(__file__))
 

@@ -62,7 +62,7 @@ class Auth(AuthBase):
 
         try:
             json_data = json.loads(r.text)
-        except json.decoder.JSONDecodeError as e:
+        except json.decoder.JSONDecodeError:
             raise SyntaxError("The server did not return expected json: {0}".format(r.text))
         logger.debug(r.status_code)
         logger.debug(r.encoding)

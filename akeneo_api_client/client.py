@@ -1,7 +1,23 @@
 # -*- coding: utf-8 -*-
 
-from akeneo_api_client.auth import *
-from akeneo_api_client.resources import *
+from akeneo_api_client.auth import Auth
+from akeneo_api_client.resources import (
+    AssociationTypesPool,
+    AttributesPool,
+    AttributeGroupsPool,
+    CategoriesPool,
+    ChannelsPool,
+    CurrenciesPool,
+    FamiliesPool,
+    LocalesPool,
+    MeasureFamiliesPool,
+    MediaFilesPool,
+    ProductsPool,
+    ProductModelsPool,
+    PublishedProductsPool,
+    urljoin,
+)
+import requests
 
 
 class Client:
