@@ -13,6 +13,7 @@ try:
     from akeneo_api_client.client import Client
 except ModuleNotFoundError as e:
     import sys
+
     sys.path.append("..")
     from akeneo_api_client.client import Client
 
@@ -21,12 +22,15 @@ except ModuleNotFoundError as e:
 # See https://github.com/theskumar/python-dotenv
 try:
     from dotenv import load_dotenv, find_dotenv
+
     load_dotenv(find_dotenv())
 except ModuleNotFoundError as e:
-    print("dotenv is unavailable. So make sure you provided "
-          "AKENEO_CLIENT_ID, AKENEO_SECRET, AKENEO_USERNAME, "
-          "AKENEO_PASSWORD, and AKENEO_BASE_URL "
-          "as environment variables.")
+    print(
+        "dotenv is unavailable. So make sure you provided "
+        "AKENEO_CLIENT_ID, AKENEO_SECRET, AKENEO_USERNAME, "
+        "AKENEO_PASSWORD, and AKENEO_BASE_URL "
+        "as environment variables."
+    )
 logzero.loglevel(logging.INFO)
 
 AKENEO_CLIENT_ID = os.environ.get("AKENEO_CLIENT_ID")
@@ -35,14 +39,15 @@ AKENEO_USERNAME = os.environ.get("AKENEO_USERNAME")
 AKENEO_PASSWORD = os.environ.get("AKENEO_PASSWORD")
 AKENEO_BASE_URL = os.environ.get("AKENEO_BASE_URL")
 
-akeneo = Client(AKENEO_BASE_URL, AKENEO_CLIENT_ID,
-                AKENEO_SECRET, AKENEO_USERNAME, AKENEO_PASSWORD)
+akeneo = Client(
+    AKENEO_BASE_URL, AKENEO_CLIENT_ID, AKENEO_SECRET, AKENEO_USERNAME, AKENEO_PASSWORD
+)
 
 # fetch items or list of items:
 try:
-    single_item = akeneo.products.fetch_item('1111111137')
+    single_item = akeneo.products.fetch_item("1111111137")
 except Exception as e:
-    print('1111111137 is not likely to exist in your PIM. Indeed:')
+    print("1111111137 is not likely to exist in your PIM. Indeed:")
     print(e)
 result = akeneo.products.fetch_list()
 
@@ -53,7 +58,9 @@ print(len(result.get_page_items()))  # 10
 # you may even iterate over it with an iterator,
 # which will fetch next pages seamlessly as you iterate over it:
 for item in result:
-    print(item["identifier"])  # this will fetch all products from the PIM, and display their identifiers
+    print(
+        item["identifier"]
+    )  # this will fetch all products from the PIM, and display their identifiers
 # if you want to fetch only the first 50 products:
 for i in range(50):
     item = next(result)
@@ -74,4 +81,4 @@ def modify_content():
     "scope":null}],"size":[{"data":"xl","locale":null,"scope":null}],"variation_name":[{"data":"Biker jacket 
     polyester","locale":"en_US","scope":null}]}} """
     akeneo.products.create_item(json.loads(valid_product))
-    akeneo.products.delete_item('myawesometshirt')
+    akeneo.products.delete_item("myawesometshirt")

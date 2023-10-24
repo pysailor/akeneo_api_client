@@ -14,13 +14,13 @@ import math
 class CreatableResource(CreatableResourceInterface):
     def create_item(self, item):
         url = self._endpoint
-        logger.debug(json.dumps(item, separators=(',', ':')))
-        r = self._session.post(url, data=json.dumps(item, separators=(',', ':')))
+        logger.debug(json.dumps(item, separators=(",", ":")))
+        r = self._session.post(url, data=json.dumps(item, separators=(",", ":")))
 
         if r.status_code != 201:
-            raise requests.HTTPError("Status code: {0}. Content: {1}".format(
-                r.status_code,
-                r.text))
+            raise requests.HTTPError(
+                "Status code: {0}. Content: {1}".format(r.status_code, r.text)
+            )
 
 
 class ListableResource(ListableResourceInterface):
@@ -36,9 +36,9 @@ class ListableResource(ListableResourceInterface):
         r = self._session.get(url, params=args)
 
         if r.status_code != 200:
-            raise requests.HTTPError("Status code: {0}. Content: {1}".format(
-                r.status_code,
-                r.text))
+            raise requests.HTTPError(
+                "Status code: {0}. Content: {1}".format(r.status_code, r.text)
+            )
 
         # c = Collection(self._session, json_text=r.text)
         c = Result.from_json_text(self._session, json_text=r.text)
@@ -53,7 +53,7 @@ class SearchAfterListableResource(ListableResource):
         if not params:
             params = {"pagination_type": "search_after"}
         elif "pagination_type" not in params:
-            params['pagination_type'] = 'search_after'
+            params["pagination_type"] = "search_after"
 
         return super(SearchAfterListableResource, self).fetch_list(params)
 
@@ -92,9 +92,9 @@ class DeletableResource(DeletableResourceInterface):
         r = self._session.delete(url)
 
         if r.status_code != 204:
-            raise requests.HTTPError("The item {0} doesn't exit. Content: {1}".format(
-                code,
-                r.text))
+            raise requests.HTTPError(
+                "The item {0} doesn't exit. Content: {1}".format(code, r.text)
+            )
 
 
 class UpdatableResource(UpdatableResourceInterface):
@@ -103,15 +103,15 @@ class UpdatableResource(UpdatableResourceInterface):
             code = self.get_code(item_values)
 
         url = urljoin(self._endpoint, code)
-        logger.debug(json.dumps(item_values, separators=(',', ':')))
-        r = self._session.patch(url, data=json.dumps(item_values, separators=(',', ':')))
+        logger.debug(json.dumps(item_values, separators=(",", ":")))
+        r = self._session.patch(url, data=json.dumps(item_values, separators=(",", ":")))
 
         if r.status_code not in [201, 204]:
-            raise requests.HTTPError("Status code: {0}. Content: {1}".format(
-                r.status_code,
-                r.text))
+            raise requests.HTTPError(
+                "Status code: {0}. Content: {1}".format(r.status_code, r.text)
+            )
         else:
-            return r.headers.get('Location')
+            return r.headers.get("Location")
 
 
 class UpdatableListResource(UpdatableResourceInterface):
@@ -119,8 +119,12 @@ class UpdatableListResource(UpdatableResourceInterface):
         url = self._endpoint
         data = ""
         for item in items:
-            data += json.dumps(item, separators=(',', ':')) + '\n'
-        r = self._session.patch(url, data=data, headers={'Content-type': 'application/vnd.akeneo.collection+json'})
+            data += json.dumps(item, separators=(",", ":")) + "\n"
+        r = self._session.patch(
+            url,
+            data=data,
+            headers={"Content-type": "application/vnd.akeneo.collection+json"},
+        )
 
         if r.status_code == 413:
             # TODO handle 413
@@ -131,40 +135,40 @@ class UpdatableListResource(UpdatableResourceInterface):
             num = 100
             n = math.ceil(len(items) / num)
 
-            itemss = [items[i:i + num] for i in range(0, (n - 1) * num, num)]
-            itemss.append(items[(n - 1) * num:])
+            itemss = [items[i : i + num] for i in range(0, (n - 1) * num, num)]
+            itemss.append(items[(n - 1) * num :])
 
-            return [item
-                    for those_items in itemss
-                    for item in self.update_create_list(those_items)]
+            return [
+                item for those_items in itemss for item in self.update_create_list(those_items)
+            ]
 
         if r.status_code != 200:
-            raise requests.HTTPError("Status code: {0}. Content: {1}".format(
-                r.status_code,
-                r.text))
+            raise requests.HTTPError(
+                "Status code: {0}. Content: {1}".format(r.status_code, r.text)
+            )
 
         else:
             statuses = []
-            for line in r.text.split('\n'):
+            for line in r.text.split("\n"):
                 statuses.append(json.loads(line))
             return statuses
 
 
 class IdentifierBasedResource(CodeBasedResourceInterface):
     def get_code(self, item):
-        return item['identifier']
+        return item["identifier"]
 
 
 class CodeBasedResource(CodeBasedResourceInterface):
     def get_code(self, item):
-        return item['code']
+        return item["code"]
 
 
-class EnterpriseEditionResource():
+class EnterpriseEditionResource:
     pass
 
 
-class ResourcePool():
+class ResourcePool:
     def __init__(self, endpoint, session):
         """Initialize the ResourcePool to the given endpoint. Eg: products"""
         self._endpoint = endpoint
@@ -175,117 +179,138 @@ class ResourcePool():
         return self._endpoint
 
 
-class ProductsPool(ResourcePool,
-                   IdentifierBasedResource,
-                   CreatableResource,
-                   DeletableResource,
-                   GettableResource,
-                   SearchAfterListableResource,
-                   UpdatableResource,
-                   UpdatableListResource):
+class ProductsPool(
+    ResourcePool,
+    IdentifierBasedResource,
+    CreatableResource,
+    DeletableResource,
+    GettableResource,
+    SearchAfterListableResource,
+    UpdatableResource,
+    UpdatableListResource,
+):
     """https://api.akeneo.com/api-reference.html#Products"""
+
     # TODO: EE support of drafts
     pass
 
 
-class ProductModelsPool(ResourcePool,
-                        IdentifierBasedResource,
-                        CreatableResource,
-                        GettableResource,
-                        SearchAfterListableResource,
-                        UpdatableResource, ):
+class ProductModelsPool(
+    ResourcePool,
+    IdentifierBasedResource,
+    CreatableResource,
+    GettableResource,
+    SearchAfterListableResource,
+    UpdatableResource,
+):
     """https://api.akeneo.com/api-reference.html#Productmodels"""
+
     pass
 
 
-class PublishedProductsPool(ResourcePool,
-                            IdentifierBasedResource,
-                            GettableResource,
-                            SearchAfterListableResource,
-                            EnterpriseEditionResource, ):
+class PublishedProductsPool(
+    ResourcePool,
+    IdentifierBasedResource,
+    GettableResource,
+    SearchAfterListableResource,
+    EnterpriseEditionResource,
+):
     """https://api.akeneo.com/api-reference.html#Publishedproducts"""
+
     pass
 
 
-class CategoriesPool(ResourcePool,
-                     CodeBasedResource,
-                     CreatableResource,
-                     GettableResource,
-                     ListableResource,
-                     UpdatableResource,
-                     UpdatableListResource, ):
+class CategoriesPool(
+    ResourcePool,
+    CodeBasedResource,
+    CreatableResource,
+    GettableResource,
+    ListableResource,
+    UpdatableResource,
+    UpdatableListResource,
+):
     """https://api.akeneo.com/api-reference.html#Categories"""
+
     pass
 
 
-class FamilyVariantsPool(ResourcePool,
-                         CodeBasedResource,
-                         CreatableResource,
-                         GettableResource,
-                         ListableResource, ):
+class FamilyVariantsPool(
+    ResourcePool,
+    CodeBasedResource,
+    CreatableResource,
+    GettableResource,
+    ListableResource,
+):
     """https://api.akeneo.com/api-reference.html#Families"""
+
     pass
 
 
-class FamiliesPool(ResourcePool,
-                   CodeBasedResource,
-                   CreatableResource,
-                   DeletableResource,
-                   GettableResource,
-                   ListableResource,
-                   UpdatableResource,
-                   UpdatableListResource, ):
+class FamiliesPool(
+    ResourcePool,
+    CodeBasedResource,
+    CreatableResource,
+    DeletableResource,
+    GettableResource,
+    ListableResource,
+    UpdatableResource,
+    UpdatableListResource,
+):
     """https://api.akeneo.com/api-reference.html#Families"""
 
     def variants(self, code):
-        return FamilyVariantsPool(
-            urljoin(self._endpoint, code, 'variants/'),
-            self._session
-        )
+        return FamilyVariantsPool(urljoin(self._endpoint, code, "variants/"), self._session)
 
 
-class AttributeOptionsPool(ResourcePool,
-                           CodeBasedResource,
-                           CreatableResource,
-                           GettableResource,
-                           ListableResource,
-                           UpdatableResource, ):
+class AttributeOptionsPool(
+    ResourcePool,
+    CodeBasedResource,
+    CreatableResource,
+    GettableResource,
+    ListableResource,
+    UpdatableResource,
+):
     """https://api.akeneo.com/api-reference.html#Attributeoptions"""
+
     pass
 
 
-class AttributesPool(ResourcePool,
-                     CodeBasedResource,
-                     CreatableResource,
-                     GettableResource,
-                     ListableResource,
-                     UpdatableResource,
-                     UpdatableListResource, ):
+class AttributesPool(
+    ResourcePool,
+    CodeBasedResource,
+    CreatableResource,
+    GettableResource,
+    ListableResource,
+    UpdatableResource,
+    UpdatableListResource,
+):
     """https://api.akeneo.com/api-reference.html#Attributes"""
 
     def options(self, code):
-        return AttributeOptionsPool(
-            urljoin(self._endpoint, code, 'options/'),
-            self._session
-        )
+        return AttributeOptionsPool(urljoin(self._endpoint, code, "options/"), self._session)
 
 
-class AttributeGroupsPool(ResourcePool,
-                          CodeBasedResource,
-                          ListableResource,
-                          CreatableResource,
-                          UpdatableListResource,
-                          GettableResource,
-                          UpdatableResource, ):
+class AttributeGroupsPool(
+    ResourcePool,
+    CodeBasedResource,
+    ListableResource,
+    CreatableResource,
+    UpdatableListResource,
+    GettableResource,
+    UpdatableResource,
+):
     """https://api.akeneo.com/api-reference.html#Attributegroups"""
+
     pass
 
 
-class MediaFilesPool(ResourcePool,
-                     CodeBasedResource,
-                     ListableResource,
-                     CreatableResource,
-                     GettableResource, ):
+class MediaFilesPool(
+    ResourcePool,
+    CodeBasedResource,
+    ListableResource,
+    CreatableResource,
+    GettableResource,
+):
     """https://api.akeneo.com/api-reference.html#Mediafiles"""
 
     def download(self, code):
@@ -295,46 +320,61 @@ class MediaFilesPool(ResourcePool,
     pass
 
 
-class LocalesPool(ResourcePool,
-                  CodeBasedResource,
-                  ListableResource,
-                  GettableResource, ):
+class LocalesPool(
+    ResourcePool,
+    CodeBasedResource,
+    ListableResource,
+    GettableResource,
+):
     """https://api.akeneo.com/api-reference.html#Locales"""
+
     pass
 
 
-class ChannelsPool(ResourcePool,
-                   CodeBasedResource,
-                   ListableResource,
-                   UpdatableListResource,
-                   GettableResource,
-                   UpdatableResource, ):
+class ChannelsPool(
+    ResourcePool,
+    CodeBasedResource,
+    ListableResource,
+    UpdatableListResource,
+    GettableResource,
+    UpdatableResource,
+):
     """https://api.akeneo.com/api-reference.html#Channels"""
+
     pass
 
 
-class CurrenciesPool(ResourcePool,
-                     CodeBasedResource,
-                     ListableResource,
-                     CreatableResource, ):
+class CurrenciesPool(
+    ResourcePool,
+    CodeBasedResource,
+    ListableResource,
+    CreatableResource,
+):
     """https://api.akeneo.com/api-reference.html#Currencies"""
+
     pass
 
 
-class MeasureFamiliesPool(ResourcePool,
-                          CodeBasedResource,
-                          ListableResource,
-                          GettableResource, ):
+class MeasureFamiliesPool(
+    ResourcePool,
+    CodeBasedResource,
+    ListableResource,
+    GettableResource,
+):
     """https://api.akeneo.com/api-reference.html#Measurefamilies"""
+
     pass
 
 
-class AssociationTypesPool(ResourcePool,
-                           CodeBasedResource,
-                           ListableResource,
-                           CreatableResource,
-                           UpdatableListResource,
-                           GettableResource,
-                           UpdatableResource, ):
+class AssociationTypesPool(
+    ResourcePool,
+    CodeBasedResource,
+    ListableResource,
+    CreatableResource,
+    UpdatableListResource,
+    GettableResource,
+    UpdatableResource,
+):
     """https://api.akeneo.com/api-reference.html#Associationtypes"""
+
     pass
