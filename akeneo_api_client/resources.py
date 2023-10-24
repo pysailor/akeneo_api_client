@@ -204,11 +204,13 @@ class ProductsPool(
 
 class ProductModelsPool(
     ResourcePool,
-    IdentifierBasedResource,
+    CodeBasedResource,
     CreatableResource,
+    DeletableResource,
     GettableResource,
     SearchAfterListableResource,
     UpdatableResource,
+    UpdatableListResource,
 ):
     """https://api.akeneo.com/api-reference.html#Productmodels"""
 
